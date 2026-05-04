@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/hero.png";
+import pEmails from "@/assets/p-emails.png";
+import pAlarm from "@/assets/p-alarm.png";
+import pStressed from "@/assets/p-stressed.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -124,7 +127,17 @@ function Problema() {
             <li>• Reportes que nadie lee porque tardan media tarde</li>
           </ul>
           <div className="mt-6 grid grid-cols-3 gap-3">
-            {[1,2,3].map(i => <Placeholder key={i} className="aspect-square" label={`img ${i}`} />)}
+            {[pEmails, pAlarm, pStressed].map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt={["Bandeja de emails saturada","Despertador a las 6:47 AM","Persona estresada frente al portátil"][i]}
+                loading="lazy"
+                width={400}
+                height={400}
+                className="aspect-square w-full object-cover rounded-2xl border border-foreground/10"
+              />
+            ))}
           </div>
         </div>
 
