@@ -29,14 +29,18 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Flowm8" },
+      { name: "description", content: "Recupera hasta 13h a la semana automatizando lo repetitivo con sistemas claros que se adaptan a cómo trabajas." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Flowm8" },
+      { property: "og:description", content: "Recupera hasta 13h a la semana automatizando lo repetitivo con sistemas claros que se adaptan a cómo trabajas." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Flowm8" },
+      { name: "twitter:description", content: "Recupera hasta 13h a la semana automatizando lo repetitivo con sistemas claros que se adaptan a cómo trabajas." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/a9b80e40-c751-4edd-b1e8-a54f48e310e9" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/a9b80e40-c751-4edd-b1e8-a54f48e310e9" },
     ],
     links: [
       {
