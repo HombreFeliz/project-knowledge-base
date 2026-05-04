@@ -110,7 +110,7 @@ function Problema() {
     <section id="problema" className="max-w-7xl mx-auto px-6 py-24">
       <div className="max-w-3xl">
         <h2 className="text-4xl md:text-5xl font-semibold leading-tight text-balance">
-          Tu equipo pierde 13 horas a la semana en tareas que ya nadie debería hacer a mano.
+          Tu equipo pierde <span className="text-primary">13 horas a la semana</span> en tareas que ya nadie debería hacer a mano.
         </h2>
         <p className="mt-5 text-lg text-foreground/70 text-balance">
           Responder los mismos emails. Pasar pedidos de un sitio a otro. Recordar seguimientos. Cuadrar inventario. Pequeñas cosas que, juntas, te roban la semana.
