@@ -181,7 +181,7 @@ function Como() {
 
       <div className="mt-12 grid md:grid-cols-3 gap-6">
         {steps.map(s => (
-          <article key={s.n} className="rounded-3xl border border-foreground/10 bg-card p-6 flex flex-col">
+          <article key={s.n} className="rounded-3xl border border-foreground/10 bg-card p-5 sm:p-6 flex flex-col min-w-0 w-full">
             <Placeholder className="aspect-[4/3] mb-6" label={s.label} />
             <span className="text-xs font-mono text-primary">{s.n} / {s.label}</span>
             <h3 className="mt-2 text-xl font-semibold">{s.title}</h3>
@@ -280,7 +280,7 @@ function Contacto() {
         </div>
         <div>
           <label className="text-sm font-medium">¿Qué te gustaría automatizar?</label>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-3 hidden sm:flex flex-wrap gap-2">
             {automatizables.map(a => (
               <label key={a} className="inline-flex items-center gap-2 rounded-full border border-foreground/15 bg-background px-3 py-1.5 text-sm cursor-pointer hover:border-primary transition">
                 <input type="checkbox" name="auto" value={a} className="accent-primary" />
@@ -288,6 +288,16 @@ function Contacto() {
               </label>
             ))}
           </div>
+          <select
+            name="auto"
+            defaultValue=""
+            className="mt-3 sm:hidden w-full rounded-2xl border border-foreground/15 bg-background px-4 py-3 outline-none focus:border-primary transition"
+          >
+            <option value="" disabled>Selecciona una opción</option>
+            {automatizables.map(a => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="text-sm font-medium">Cuéntanos un poco más</label>
