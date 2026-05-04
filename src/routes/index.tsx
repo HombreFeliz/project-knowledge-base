@@ -51,14 +51,14 @@ function Hero() {
   return (
     <section id="top" className="max-w-7xl mx-auto px-6 pt-16 md:pt-24 pb-16">
       <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div>
+        <div className="text-center md:text-left">
           <h1 className="text-5xl md:text-7xl font-semibold leading-[1.05] text-balance">
             Que tu negocio <em className="not-italic text-primary">fluya</em> solo
           </h1>
-          <p className="mt-6 text-lg md:text-xl text-foreground/70 max-w-xl text-balance">
+          <p className="mt-6 text-lg md:text-xl text-foreground/70 max-w-xl text-balance mx-auto md:mx-0">
             Recupera hasta 13 horas a la semana automatizando lo repetitivo con sistemas claros que se adaptan a cómo ya trabajas.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3 justify-center md:justify-start">
             <a href="#contacto" className="inline-flex items-center rounded-full bg-primary text-primary-foreground px-6 py-3 text-sm font-medium hover:opacity-90 transition">
               Pide tu propuesta gratis
             </a>
@@ -66,7 +66,7 @@ function Hero() {
               Ver cómo funciona
             </a>
           </div>
-          <dl className="mt-12 grid grid-cols-3 gap-6 max-w-lg">
+          <dl className="mt-12 grid grid-cols-3 gap-6 max-w-lg mx-auto md:mx-0">
             {[
               ["13h", "ahorradas x semana"],
               ["x8", "leads cualificados"],
