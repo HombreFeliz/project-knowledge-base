@@ -312,11 +312,11 @@ function Field({ label, name, type = "text" }: { label: string; name: string; ty
 
 function Footer() {
   return (
-    <footer className="border-t border-foreground/10 bg-foreground/[0.02]">
+    <footer className="bg-secondary text-secondary-foreground">
       <div className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-4 gap-10">
         <div className="md:col-span-1">
           <div className="text-3xl font-bold tracking-tight">Flowm8</div>
-          <p className="mt-3 text-sm text-foreground/70">
+          <p className="mt-3 text-sm opacity-70">
             Consultoría de automatización con IA para PYMES. Sistemas claros, crecimiento sereno, automatización con calidez humana.
           </p>
         </div>
@@ -324,8 +324,8 @@ function Footer() {
         <FooterCol title="Empresa" items={["Sobre Carlos", "Notas", "Contacto"]} />
         <FooterCol title="Contacto" items={["hola@flowm8.com", "+56 8765 4321"]} />
       </div>
-      <div className="border-t border-foreground/10">
-        <div className="max-w-7xl mx-auto px-6 py-6 text-sm text-foreground/60 flex flex-wrap justify-between gap-3">
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-6 text-sm opacity-60 flex flex-wrap justify-between gap-3">
           <span>© 2026 Flowm8.</span>
           <span>Que tu negocio fluya solo.</span>
         </div>
@@ -337,8 +337,8 @@ function Footer() {
 function FooterCol({ title, items }: { title: string; items: string[] }) {
   return (
     <div>
-      <h4 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">{title}</h4>
-      <ul className="mt-4 space-y-2 text-foreground/80">
+      <h4 className="text-sm font-semibold uppercase tracking-widest opacity-60">{title}</h4>
+      <ul className="mt-4 space-y-2 opacity-90">
         {items.map(i => <li key={i}><a href="#" className="hover:text-primary transition">{i}</a></li>)}
       </ul>
     </div>
