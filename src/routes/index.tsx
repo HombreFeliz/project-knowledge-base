@@ -1,4 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero.png";
 import pEmails from "@/assets/p-emails.png";
 import pAlarm from "@/assets/p-alarm.png";
@@ -252,7 +255,50 @@ function Carlos() {
 }
 
 function Contacto() {
-  const automatizables = ["Atención al cliente","Pedidos / órdenes","Inventario","Reservas","Reportes y dashboards","Marketing y leads","Facturación","Otra cosa"];
+  const fallback = ["Atención al cliente","Pedidos / órdenes","Inventario","Reservas","Reportes y dashboards","Marketing y leads","Facturación","Otra cosa"];
+  const [automatizables, setAutomatizables] = useState<string[]>(fallback);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [mobileSel, setMobileSel] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    supabase.from("servicios").select("nombre").order("nombre").then(({ data }) => {
+      if (data && data.length) setAutomatizables(data.map(d => d.nombre as string));
+    });
+  }, []);
+
+  const toggle = (s: string) => setSelected(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (submitting) return;
+    const fd = new FormData(e.currentTarget);
+    const servicios = selected.length ? selected : (mobileSel ? [mobileSel] : []);
+    const payload = {
+      nombre: String(fd.get("nombre") || "").trim(),
+      negocio: String(fd.get("negocio") || "").trim(),
+      email: String(fd.get("email") || "").trim(),
+      tamano_equipo: String(fd.get("equipo") || "").trim() || null,
+      servicios,
+      mensaje: String(fd.get("mensaje") || "").trim() || null,
+    };
+    if (!payload.nombre || !payload.negocio || !payload.email) {
+      toast.error("Completa nombre, negocio y email.");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("contactos").insert(payload);
+    setSubmitting(false);
+    if (error) {
+      toast.error("No pudimos enviar tu mensaje. Intenta de nuevo.");
+      return;
+    }
+    toast.success("Gracias, te respondemos en menos de 24h.");
+    (e.target as HTMLFormElement).reset();
+    setSelected([]);
+    setMobileSel("");
+  };
+
   return (
     <section id="contacto" className="max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-16">
       <div>
@@ -269,7 +315,7 @@ function Contacto() {
         </ul>
       </div>
 
-      <form onSubmit={(e) => { e.preventDefault(); alert("Gracias, te respondemos en menos de 24h."); }} className="rounded-3xl border border-foreground/10 bg-card p-8 space-y-5">
+      <form onSubmit={handleSubmit} className="rounded-3xl border border-foreground/10 bg-card p-8 space-y-5">
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Nombre" name="nombre" />
           <Field label="Negocio" name="negocio" />
@@ -283,14 +329,14 @@ function Contacto() {
           <div className="mt-3 hidden sm:flex flex-wrap gap-2">
             {automatizables.map(a => (
               <label key={a} className="inline-flex items-center gap-2 rounded-full border border-foreground/15 bg-background px-3 py-1.5 text-sm cursor-pointer hover:border-primary transition">
-                <input type="checkbox" name="auto" value={a} className="accent-primary" />
+                <input type="checkbox" checked={selected.includes(a)} onChange={() => toggle(a)} className="accent-primary" />
                 {a}
               </label>
             ))}
           </div>
           <select
-            name="auto"
-            defaultValue=""
+            value={mobileSel}
+            onChange={(e) => setMobileSel(e.target.value)}
             className="mt-3 sm:hidden w-full rounded-2xl border border-foreground/15 bg-background px-4 py-3 outline-none focus:border-primary transition"
           >
             <option value="" disabled>Selecciona una opción</option>
@@ -303,8 +349,8 @@ function Contacto() {
           <label className="text-sm font-medium">Cuéntanos un poco más</label>
           <textarea rows={4} name="mensaje" className="mt-2 w-full rounded-2xl border border-foreground/15 bg-background px-4 py-3 outline-none focus:border-primary transition" />
         </div>
-        <button type="submit" className="w-full rounded-full bg-primary text-primary-foreground px-6 py-3.5 text-sm font-medium hover:opacity-90 transition">
-          Enviar propuesta
+        <button type="submit" disabled={submitting} className="w-full rounded-full bg-primary text-primary-foreground px-6 py-3.5 text-sm font-medium hover:opacity-90 transition disabled:opacity-60">
+          {submitting ? "Enviando..." : "Enviar propuesta"}
         </button>
       </form>
     </section>
