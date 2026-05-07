@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           created_at: string
           email: string
+          estado: Database["public"]["Enums"]["contacto_estado"]
           id: string
           mensaje: string | null
           negocio: string
@@ -28,6 +29,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email: string
+          estado?: Database["public"]["Enums"]["contacto_estado"]
           id?: string
           mensaje?: string | null
           negocio: string
@@ -38,6 +40,7 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+          estado?: Database["public"]["Enums"]["contacto_estado"]
           id?: string
           mensaje?: string | null
           negocio?: string
@@ -73,7 +76,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      contacto_estado: "nuevo" | "en_espera" | "cerrado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -200,6 +203,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      contacto_estado: ["nuevo", "en_espera", "cerrado"],
+    },
   },
 } as const
