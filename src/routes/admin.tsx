@@ -65,9 +65,22 @@ function AdminPage() {
 
   useEffect(() => {
     let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       if (!mounted) return;
       if (!data.session) {
+        navigate({ to: "/login" });
+        return;
+      }
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.session.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (!mounted) return;
+      if (!roles) {
+        toast.error("No tienes permisos de administrador.");
+        await supabase.auth.signOut();
         navigate({ to: "/login" });
         return;
       }
