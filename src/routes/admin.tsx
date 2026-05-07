@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pencil, Trash2, LogOut } from "lucide-react";
 
 type Contacto = {
@@ -17,9 +18,22 @@ type Contacto = {
   servicios: string[];
   mensaje: string | null;
   created_at: string;
+  estado: "nuevo" | "en_espera" | "cerrado";
 };
 
 type Servicio = { id: string; nombre: string };
+
+const ESTADO_LABELS: Record<Contacto["estado"], string> = {
+  nuevo: "Nuevo",
+  en_espera: "En espera",
+  cerrado: "Cerrado",
+};
+
+const ESTADO_STYLES: Record<Contacto["estado"], string> = {
+  nuevo: "bg-[#C75D2C]/10 text-[#C75D2C] border-[#C75D2C]/30",
+  en_espera: "bg-amber-500/10 text-amber-700 border-amber-500/30",
+  cerrado: "bg-muted text-muted-foreground border-border",
+};
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -106,6 +120,18 @@ function AdminPage() {
     loadServicios();
   };
 
+  const handleEstadoChange = async (id: string, estado: Contacto["estado"]) => {
+    const prev = contactos;
+    setContactos((cs) => cs.map((c) => (c.id === id ? { ...c, estado } : c)));
+    const { error } = await supabase.from("contactos").update({ estado }).eq("id", id);
+    if (error) {
+      setContactos(prev);
+      toast.error(error.message);
+    } else {
+      toast.success("Estado actualizado");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
@@ -136,12 +162,13 @@ function AdminPage() {
                     <TableHead>Equipo</TableHead>
                     <TableHead>Servicios</TableHead>
                     <TableHead>Mensaje</TableHead>
+                    <TableHead>Estado</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {contactos.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                         Aún no hay contactos.
                       </TableCell>
                     </TableRow>
@@ -157,6 +184,21 @@ function AdminPage() {
                         <TableCell>{c.tamano_equipo || "—"}</TableCell>
                         <TableCell className="max-w-xs">{c.servicios?.join(", ") || "—"}</TableCell>
                         <TableCell className="max-w-md text-sm">{c.mensaje || "—"}</TableCell>
+                        <TableCell>
+                          <Select
+                            value={c.estado}
+                            onValueChange={(v) => handleEstadoChange(c.id, v as Contacto["estado"])}
+                          >
+                            <SelectTrigger className={`h-8 w-[130px] border ${ESTADO_STYLES[c.estado]}`}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="nuevo">Nuevo</SelectItem>
+                              <SelectItem value="en_espera">En espera</SelectItem>
+                              <SelectItem value="cerrado">Cerrado</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
                       </TableRow>
                     ))
                   )}
