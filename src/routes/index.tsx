@@ -260,6 +260,10 @@ function Contacto() {
   const [selected, setSelected] = useState<string[]>([]);
   const [mobileSel, setMobileSel] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+
+  const equipoRangos = ["0 - 5", "6 - 15", "16 - 50", "51 - 200", "200+"];
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   useEffect(() => {
     supabase.from("servicios").select("nombre").order("nombre").then(({ data }) => {
@@ -282,8 +286,20 @@ function Contacto() {
       servicios,
       mensaje: String(fd.get("mensaje") || "").trim() || null,
     };
-    if (!payload.nombre || !payload.negocio || !payload.email) {
-      toast.error("Completa nombre, negocio y email.");
+    if (!payload.nombre || !payload.negocio || !payload.email || !payload.tamano_equipo) {
+      toast.error("Completa todos los campos obligatorios.");
+      return;
+    }
+    if (!emailRegex.test(payload.email)) {
+      toast.error("Introduce un email válido.");
+      return;
+    }
+    if (servicios.length === 0) {
+      toast.error("Selecciona al menos un servicio a automatizar.");
+      return;
+    }
+    if (!acceptTerms) {
+      toast.error("Debes aceptar los términos y la política de privacidad.");
       return;
     }
     setSubmitting(true);
@@ -297,6 +313,7 @@ function Contacto() {
     (e.target as HTMLFormElement).reset();
     setSelected([]);
     setMobileSel("");
+    setAcceptTerms(false);
   };
 
   return (
@@ -317,15 +334,33 @@ function Contacto() {
 
       <form onSubmit={handleSubmit} className="rounded-3xl border border-foreground/10 bg-card p-8 space-y-5">
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Nombre" name="nombre" />
-          <Field label="Negocio" name="negocio" />
+          <Field label="Nombre" name="nombre" required />
+          <Field label="Negocio" name="negocio" required />
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Email" name="email" type="email" />
-          <Field label="Tamaño del equipo" name="equipo" />
+          <Field label="Email" name="email" type="email" required />
+          <div>
+            <label className="text-sm font-medium" htmlFor="equipo">
+              Tamaño del equipo <span className="text-primary">*</span>
+            </label>
+            <select
+              id="equipo"
+              name="equipo"
+              required
+              defaultValue=""
+              className="mt-2 w-full rounded-2xl border border-foreground/15 bg-background px-4 py-3 outline-none focus:border-primary transition"
+            >
+              <option value="" disabled>Selecciona un rango</option>
+              {equipoRangos.map(r => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+          </div>
         </div>
         <div>
-          <label className="text-sm font-medium">¿Qué te gustaría automatizar?</label>
+          <label className="text-sm font-medium">
+            ¿Qué te gustaría automatizar? <span className="text-primary">*</span>
+          </label>
           <div className="mt-3 hidden sm:flex flex-wrap gap-2">
             {automatizables.map(a => (
               <label key={a} className="inline-flex items-center gap-2 rounded-full border border-foreground/15 bg-background px-3 py-1.5 text-sm cursor-pointer hover:border-primary transition">
@@ -349,7 +384,18 @@ function Contacto() {
           <label className="text-sm font-medium">Cuéntanos un poco más</label>
           <textarea rows={4} name="mensaje" className="mt-2 w-full rounded-2xl border border-foreground/15 bg-background px-4 py-3 outline-none focus:border-primary transition" />
         </div>
-        <button type="submit" disabled={submitting} className="w-full rounded-full bg-primary text-primary-foreground px-6 py-3.5 text-sm font-medium hover:opacity-90 transition disabled:opacity-60">
+        <label className="flex items-start gap-3 text-sm text-foreground/80 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={acceptTerms}
+            onChange={(e) => setAcceptTerms(e.target.checked)}
+            className="mt-1 accent-primary"
+          />
+          <span>
+            Acepto los <a href="#" className="underline hover:text-primary">términos y condiciones</a> y la <a href="#" className="underline hover:text-primary">política de privacidad</a>.
+          </span>
+        </label>
+        <button type="submit" disabled={submitting || !acceptTerms} className="w-full rounded-full bg-primary text-primary-foreground px-6 py-3.5 text-sm font-medium hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed">
           {submitting ? "Enviando..." : "Enviar propuesta"}
         </button>
       </form>
@@ -357,11 +403,13 @@ function Contacto() {
   );
 }
 
-function Field({ label, name, type = "text" }: { label: string; name: string; type?: string }) {
+function Field({ label, name, type = "text", required = false }: { label: string; name: string; type?: string; required?: boolean }) {
   return (
     <div>
-      <label className="text-sm font-medium" htmlFor={name}>{label}</label>
-      <input id={name} name={name} type={type} className="mt-2 w-full rounded-2xl border border-foreground/15 bg-background px-4 py-3 outline-none focus:border-primary transition" />
+      <label className="text-sm font-medium" htmlFor={name}>
+        {label} {required && <span className="text-primary">*</span>}
+      </label>
+      <input id={name} name={name} type={type} required={required} className="mt-2 w-full rounded-2xl border border-foreground/15 bg-background px-4 py-3 outline-none focus:border-primary transition" />
     </div>
   );
 }
