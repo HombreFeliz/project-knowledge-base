@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, redirect, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,15 +22,12 @@ type Contacto = {
 type Servicio = { id: string; nombre: string };
 
 export const Route = createFileRoute("/admin")({
-  beforeLoad: async () => {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) throw redirect({ to: "/login" });
-  },
   component: AdminPage,
 });
 
 function AdminPage() {
   const navigate = useNavigate();
+  const [ready, setReady] = useState(false);
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [nuevo, setNuevo] = useState("");
@@ -53,9 +50,29 @@ function AdminPage() {
   };
 
   useEffect(() => {
-    loadContactos();
-    loadServicios();
-  }, []);
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      if (!data.session) {
+        navigate({ to: "/login" });
+        return;
+      }
+      setReady(true);
+      loadContactos();
+      loadServicios();
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [navigate]);
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-muted-foreground">
+        Cargando...
+      </div>
+    );
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
