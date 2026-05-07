@@ -164,7 +164,73 @@ function AdminPage() {
           </TabsList>
 
           <TabsContent value="contactos" className="mt-6">
-            <div className="border border-border rounded-xl overflow-hidden bg-card">
+            {/* Mobile: card list */}
+            <div className="md:hidden space-y-3">
+              {contactos.length === 0 ? (
+                <div className="border border-border rounded-xl bg-card p-6 text-center text-muted-foreground">
+                  Aún no hay contactos.
+                </div>
+              ) : (
+                contactos.map((c) => (
+                  <div key={c.id} className="border border-border rounded-xl bg-card p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-foreground truncate">{c.nombre}</p>
+                        <p className="text-sm text-muted-foreground truncate">{c.negocio}</p>
+                      </div>
+                      <Select
+                        value={c.estado}
+                        onValueChange={(v) => handleEstadoChange(c.id, v as Contacto["estado"])}
+                      >
+                        <SelectTrigger className={`h-8 w-[120px] shrink-0 border ${ESTADO_STYLES[c.estado]}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="nuevo">Nuevo</SelectItem>
+                          <SelectItem value="en_espera">En espera</SelectItem>
+                          <SelectItem value="cerrado">Cerrado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <dl className="grid grid-cols-1 gap-2 text-sm">
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-muted-foreground">Email</dt>
+                        <dd className="text-right break-all">{c.email}</dd>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-muted-foreground">Equipo</dt>
+                        <dd>{c.tamano_equipo || "—"}</dd>
+                      </div>
+                      <div className="flex justify-between gap-3">
+                        <dt className="text-muted-foreground">Fecha</dt>
+                        <dd>{new Date(c.created_at).toLocaleDateString()}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted-foreground mb-1">Servicios</dt>
+                        <dd className="flex flex-wrap gap-1">
+                          {c.servicios?.length ? (
+                            c.servicios.map((s) => (
+                              <span key={s} className="inline-block text-xs bg-muted px-2 py-0.5 rounded-full">{s}</span>
+                            ))
+                          ) : (
+                            <span>—</span>
+                          )}
+                        </dd>
+                      </div>
+                      {c.mensaje && (
+                        <div>
+                          <dt className="text-muted-foreground mb-1">Mensaje</dt>
+                          <dd className="text-foreground">{c.mensaje}</dd>
+                        </div>
+                      )}
+                    </dl>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop: table */}
+            <div className="hidden md:block border border-border rounded-xl overflow-hidden bg-card">
               <Table>
                 <TableHeader>
                   <TableRow>
